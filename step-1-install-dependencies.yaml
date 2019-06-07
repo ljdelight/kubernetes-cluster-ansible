@@ -50,7 +50,7 @@
     - name: Add docker daemon configuration
       copy:
         src: docker-daemon.json
-        dest: /etc/docker/daemon.json
+        dest: /etc/docker/
 
     - name: Start docker
       service:
