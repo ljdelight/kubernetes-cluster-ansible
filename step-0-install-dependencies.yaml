@@ -1,0 +1,105 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Stop enforcing selinux for the current boot
+      command: setenforce 0
+
+    - name: Disable selinux for future boots
+      selinux:
+        state: disabled
+
+    - name: Set net.bridge.bridge-nf-call-ip6tables to 1
+      sysctl:
+        name: net.bridge.bridge-nf-call-ip6tables
+        value: 1
+        state: present
+        sysctl_set: yes
+
+    - name: Set net.bridge.bridge-nf-call-iptables to 1
+      sysctl:
+        name: net.bridge.bridge-nf-call-iptables
+        value: 1
+        state: present
+        sysctl_set: yes
+
+    - name: Disable firewalld
+      service:
+        name: firewalld
+        state: stopped
+        enabled: no
+
+    - name: Install docker dependencies
+      yum:
+        name:
+          - yum-utils
+          - device-mapper-persistent-data
+          - lvm2
+        state: present
+
+    - name: Add Docker repository
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docer-ce.repo
+
+    - name: Install docker
+      yum:
+        name: docker-ce-18.09.6
+        state: present
+        update_cache: true
+
+    - name: Add docker daemon configuration
+      copy:
+        src: docker-daemon.json
+        dest: /etc/docker/daemon.json
+
+    - name: Start docker
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Add Kubernetes repository
+      yum_repository:
+        name: Kubernetes
+        description: Kubernetes
+        baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        gpgcheck: yes
+
+    - name: Install kubelet
+      yum:
+        name: kubelet-1.14.3
+        state: present
+        update_cache: true
+
+    - name: Install kubeadm
+      yum:
+        name: kubeadm-1.14.3
+        state: present
+
+    - name: Start kubelet
+      service:
+        name: kubelet
+        enabled: yes
+        state: started
+
+    - name: Create centos user
+      user:
+        name: centos
+        password: "$6$QUgphi6lokEKeGo6$JXskjWkxKfk2LhjBpBOCviXuSK6C3dGsvr7BhCOqc4Buv1VBlni9DOu1Iz4AyHwRGan.rqZKnkIDJwG08B35p0"
+        groups:
+          - docker
+        state: present
+        shell: /bin/bash
+        system: no
+        createhome: yes
+        home: /home/centos
+
+- hosts: master
+  become: yes
+  tasks:
+    - name: Install kubectl
+      yum:
+        name: kubectl-1.14.3
+        state: present
+        allow_downgrade: yes

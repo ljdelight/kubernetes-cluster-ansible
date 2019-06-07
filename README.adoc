@@ -1,0 +1,37 @@
+
+
+== Kubernetes Cluster Ansible
+
+Are you setting up your first Kubernetes cluster on CentOS 7 and want to borrow ideas to create your own perfect ansible script?
+Then this repository is for you!
+
+Here we have a small collection of not-perfect ansible scripts to setup a k8s master and k8s nodes.
+
+
+=== Assumptions
+
+These scripts make a few assumptions:
+
+* Ansible is installed on some machine not in the cluster
+* There are 3+ nodes for the cluster using near-virgin install of CentOS 7 _using static IP addresses_
+ - One CentOS 7 installs for the kubernetes master
+ - One or more CentOS 7 install for the kubernetes nodes
+* You're expected to read and understand these scripts
+* You're expected to change the scripts to suit your needs
+* You're expected to read the doc pages for all kubernetes commands used in the playbooks (hah, just kidding)
+
+
+=== Provision the Kubernetes Cluster
+
+First copy `k8s-cluster.template` as `k8s-cluster` and modify it to house the hosts used in the cluster. 
+
+IMPORTANT: The ansible scripts create user `centos` with password `kubernetes` for use in the cluster. Change the password using `mkpasswd --method=sha-512` and updating the ansible scripts.
+
+Next use ansible to provision the cluster. It is split out into three steps for clarity.
+[source,bash]
+----
+export ANSIBLE_HOST_KEY_CHECKING=false
+ansible-playbook -i k8s-cluster step-0-install-dependencies.yaml
+ansible-playbook -i k8s-cluster step-1-cluster-init.yaml
+ansible-playbook -i k8s-cluster step-2-nodes-join-cluster.yaml
+----

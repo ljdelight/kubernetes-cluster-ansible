@@ -1,0 +1,31 @@
+- hosts: master
+  become: yes
+  tasks:
+    - name: Initialize the kubernetes cluster (creating /etc/kubernetes/admin.conf)
+      shell: kubeadm init --pod-network-cidr=10.20.0.0/16 2>&1 | tee kubeadm-init-output.txt || rm -f kubeadm-init-output.txt
+      args:
+        chdir: $HOME
+        creates: kubeadm-init-output.txt
+
+    - name: Create $HOME/.kube directory
+      become: yes
+      become_user: centos
+      file:
+        path: $HOME/.kube
+        state: directory
+        mode: 0755
+
+    - name: Copy /etc/kubernetes/admin.conf to user directory, for using kubectl
+      copy:
+        src: /etc/kubernetes/admin.conf
+        dest: /home/centos/.kube/config
+        remote_src: yes
+        owner: centos
+
+    - name: Install kube-flannel pod network
+      become: yes
+      become_user: centos
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.11.0/Documentation/kube-flannel.yml | tee kubectl-apply-flannel-output.txt || rm -f kubectl-apply-flannel-output.txt
+      args:
+        chdir: /home/centos
+        creates: kubectl-apply-flannel-output.txt
