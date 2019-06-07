@@ -2,7 +2,7 @@
   become: yes
   tasks:
     - name: Initialize the kubernetes cluster (creating /etc/kubernetes/admin.conf)
-      shell: kubeadm init --pod-network-cidr=10.20.0.0/16 2>&1 | tee kubeadm-init-output.txt || rm -f kubeadm-init-output.txt
+      shell: kubeadm init --pod-network-cidr=10.20.0.0/16 > kubeadm-init-output.txt 2>&1 || { cat kubeadm-init-output.txt; rm -f kubeadm-init-output.txt; false; }
       args:
         chdir: $HOME
         creates: kubeadm-init-output.txt
@@ -25,7 +25,7 @@
     - name: Install kube-flannel pod network
       become: yes
       become_user: centos
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.11.0/Documentation/kube-flannel.yml | tee kubectl-apply-flannel-output.txt || rm -f kubectl-apply-flannel-output.txt
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.11.0/Documentation/kube-flannel.yml > kubectl-apply-flannel-output.txt 2>&1 || { cat kubectl-apply-flannel-output.txt; rm -f kubectl-apply-flannel-output.txt; false; }
       args:
         chdir: /home/centos
         creates: kubectl-apply-flannel-output.txt
