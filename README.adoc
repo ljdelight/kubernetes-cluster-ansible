@@ -14,7 +14,7 @@ These scripts make a few assumptions:
 
 * Ansible is installed on some machine not in the cluster
 * There are 3+ nodes for the cluster using near-virgin install of CentOS 7 _using static IP addresses_
- - One CentOS 7 installs for the kubernetes master
+ - One CentOS 7 install for the kubernetes master
  - One or more CentOS 7 install for the kubernetes nodes
 * You're expected to read and understand these scripts
 * You're expected to change the scripts to suit your needs
@@ -31,7 +31,7 @@ Next use ansible to provision the cluster. It is split out into three steps for 
 [source,bash]
 ----
 export ANSIBLE_HOST_KEY_CHECKING=false
-ansible-playbook -i k8s-cluster step-0-install-dependencies.yaml
-ansible-playbook -i k8s-cluster step-1-cluster-init.yaml
-ansible-playbook -i k8s-cluster step-2-nodes-join-cluster.yaml
+ansible-playbook -i k8s-cluster step-1-install-dependencies.yaml
+ansible-playbook -i k8s-cluster step-2-cluster-init.yaml
+ansible-playbook -i k8s-cluster step-3-nodes-join-cluster.yaml
 ----
