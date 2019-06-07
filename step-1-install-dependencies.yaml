@@ -1,6 +1,15 @@
 - hosts: all
   become: yes
   tasks:
+    - name: Remove swap from /etc/fstab (impacts next reboots)
+      mount:
+        name: swap
+        fstype: swap
+        state: absent
+    - name: Disable swap for the current session
+      command: swapoff -a
+      when: ansible_swaptotal_mb > 0
+
     - name: Stop enforcing selinux for the current boot
       command: setenforce 0
 
