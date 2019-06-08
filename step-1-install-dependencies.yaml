@@ -42,10 +42,15 @@
         state: present
         update_cache: true
 
+    - name: Create /etc/docker if it does not exist
+      file:
+        path: /etc/docker
+        state: directory
+        mode: '0755'
     - name: Add docker daemon configuration
       copy:
         src: docker-daemon.json
-        dest: /etc/docker/
+        dest: /etc/docker/daemon.json
 
     - name: Start docker
       service:
