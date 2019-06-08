@@ -14,7 +14,7 @@
   become: yes
   tasks:
     - name: Join cluster
-      shell: "{{ hostvars['master'].join_command }} --ignore-preflight-errors all | tee node-join-cluster.txt || rm -f node-join-cluster.txt"
+      shell: "{{ hostvars['master'].join_command }} > node-join-cluster.txt 2>&1  || { cat node-join-cluster.txt; rm -f node-join-cluster.txt; false; }"
       args:
         chdir: $HOME
         creates: node-join-cluster.txt
