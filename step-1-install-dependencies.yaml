@@ -58,16 +58,23 @@
         state: started
         enabled: yes
 
-    - name: Set net.bridge.bridge-nf-call-ip6tables to 1
+    - name: Set net.bridge.bridge-nf-call-iptables to 1
       sysctl:
-        name: net.bridge.bridge-nf-call-ip6tables
+        name: net.bridge.bridge-nf-call-iptables
         value: 1
         state: present
         sysctl_set: yes
 
-    - name: Set net.bridge.bridge-nf-call-iptables to 1
+    - name: Disable ipv6 for all
       sysctl:
-        name: net.bridge.bridge-nf-call-iptables
+        name: net.ipv6.conf.all.disable_ipv6
+        value: 1
+        state: present
+        sysctl_set: yes
+
+    - name: Disable ipv6 for default
+      sysctl:
+        name: net.ipv6.conf.default.disable_ipv6
         value: 1
         state: present
         sysctl_set: yes
