@@ -1,8 +1,8 @@
 - hosts: master
   become: yes
   tasks:
-    - name: Initialize the kubernetes cluster (creating /etc/kubernetes/admin.conf)
-      shell: kubeadm init --pod-network-cidr=10.20.0.0/16 > kubeadm-init-output.txt 2>&1 || { cat kubeadm-init-output.txt; rm -f kubeadm-init-output.txt; false; }
+    - name: Initialize the kubernetes cluster (creating /etc/kubernetes/admin.conf). kube-flannel REQUIRES cidr 10.244.0.0/16.
+      shell: kubeadm init --pod-network-cidr=10.244.0.0/16 > kubeadm-init-output.txt 2>&1 || { cat kubeadm-init-output.txt; rm -f kubeadm-init-output.txt; false; }
       args:
         chdir: $HOME
         creates: kubeadm-init-output.txt
@@ -21,6 +21,7 @@
         dest: /home/centos/.kube/config
         remote_src: yes
         owner: centos
+        group: centos
 
     - name: Install kube-flannel pod network
       become: yes
