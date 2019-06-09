@@ -23,7 +23,7 @@ These scripts make a few assumptions:
 
 === Provision the Kubernetes Cluster
 
-First copy `k8s-cluster.template` as `k8s-cluster` and modify it to house the hosts used in the cluster. 
+First copy `k8s-cluster.template` as `k8s-cluster` and modify it to house the hosts used in the cluster.
 
 IMPORTANT: The ansible scripts create user `centos` with password `kubernetes` for use in the cluster. Change the password using `mkpasswd --method=sha-512` and updating the ansible scripts.
 
@@ -35,3 +35,10 @@ ansible-playbook -i k8s-cluster step-1-install-dependencies.yaml
 ansible-playbook -i k8s-cluster step-2-cluster-init.yaml
 ansible-playbook -i k8s-cluster step-3-nodes-join-cluster.yaml
 ----
+
+
+Next setup tooling to get insight into what is going on with the cluster:
+
+* https://www.weave.works/[WeaveWorks]: `kubectl apply -f "https://cloud.weave.works/k8s/scope.yaml?k8s-service-type=NodePort&k8s-version=$(kubectl version | base64 | tr -d '\n')"`
+  - Fantastic tool to see cpu, memory, hosts, images, pods, controllers/services, processes, _everything_ about the cluster status.
+* TODO try some others, especially one-stop logging for debugging
