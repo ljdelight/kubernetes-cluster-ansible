@@ -31,16 +31,22 @@
           - lvm2
         state: present
 
-    - name: Add Docker repository
-      get_url:
-        url: https://download.docker.com/linux/centos/docker-ce.repo
-        dest: /etc/yum.repos.d/docer-ce.repo
+    - name: Add docker-ce-stable repository
+      yum_repository:
+        name: docker
+        description: docker
+        baseurl: https://download.docker.com/linux/centos/7/x86_64/stable
+        gpgkey: https://download.docker.com/linux/centos/gpg
+        gpgcheck: yes
+        exclude: docker*
 
     - name: Install docker
       yum:
-        name: docker-ce-18.09.6
+        name: docker-ce-18.09.9
         state: present
         update_cache: true
+        allow_downgrade: yes
+        disable_excludes: docker
 
     - name: Create /etc/docker if it does not exist
       file:
@@ -81,22 +87,25 @@
 
     - name: Add Kubernetes repository
       yum_repository:
-        name: Kubernetes
-        description: Kubernetes
+        name: kubernetes
+        description: kubernetes
         baseurl: https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
         gpgkey: https://packages.cloud.google.com/yum/doc/yum-key.gpg https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
         gpgcheck: yes
+        exclude: kube*
 
     - name: Install kubelet
       yum:
-        name: kubelet-1.14.3
+        name: kubelet-1.16.1
         state: present
+        disable_excludes: kubernetes
         update_cache: true
 
     - name: Install kubeadm
       yum:
-        name: kubeadm-1.14.3
+        name: kubeadm-1.16.1
         state: present
+        disable_excludes: kubernetes
 
     - name: Start kubelet
       service:
@@ -121,6 +130,7 @@
   tasks:
     - name: Install kubectl
       yum:
-        name: kubectl-1.14.3
+        name: kubectl-1.16.1
         state: present
         allow_downgrade: yes
+        disable_excludes: kubernetes

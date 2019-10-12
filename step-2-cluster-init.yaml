@@ -26,7 +26,7 @@
     - name: Install kube-flannel pod network
       become: yes
       become_user: centos
-      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/v0.11.0/Documentation/kube-flannel.yml > kubectl-apply-flannel-output.txt 2>&1 || { cat kubectl-apply-flannel-output.txt; rm -f kubectl-apply-flannel-output.txt; false; }
+      shell: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml > kubectl-apply-flannel-output.txt 2>&1 || { cat kubectl-apply-flannel-output.txt; rm -f kubectl-apply-flannel-output.txt; false; }
       args:
         chdir: /home/centos
         creates: kubectl-apply-flannel-output.txt
