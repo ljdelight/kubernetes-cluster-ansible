@@ -1,0 +1,21 @@
+- hosts: all
+  become: yes
+  tasks:
+    - name: Check that ntp isn't installed
+      yum:
+        name:
+          - ntp
+        state: removed
+
+    - name: Install chrony
+      yum:
+        name:
+          - chrony
+        state: present
+
+    - name: Start the chrony service
+      service:
+        name: chronyd
+        enabled: yes
+        state: started
+
